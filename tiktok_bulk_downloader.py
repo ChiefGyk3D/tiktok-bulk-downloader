@@ -37,9 +37,10 @@ def main():
     # Get the user's videos
     command = f"tiktok-scraper user {username} -t json -n 0"
     user_videos_raw = subprocess.check_output(command, shell=True)
-user_videos = json.loads(user_videos_raw)["collector"]
+    user_videos = json.loads(user_videos_raw)["collector"]
 
-# Download the videos
-download_videos(user_videos)
-if name == "main":
+    # Download the videos
+    download_videos(user_videos)
+
+if __name__ == "__main__":
     main()
