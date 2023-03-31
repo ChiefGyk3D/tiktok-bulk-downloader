@@ -1,41 +1,51 @@
-import os
 import json
+import os
 from tiktok_scraper import TikTokScraper
 
-def download_tiktoks(username, download_folder):
-    scraper = TikTokScraper()
+# Load configuration from config.json
+with open('config.json', 'r') as file:
+    config = json.load(file)
 
-    # Scrape TikTok user profile and video metadata
-    user_data = scraper.get_user(username)
-    user_videos = scraper.get_user_videos(username, count=user_data['stats']['videoCount'])
+username = config["username"]
+download_folder = config["download_folder"]
 
-    # Create download folder if it doesn't exist
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
+# Ensure the download folder exists
+os.makedirs(download_folder, exist_ok=True)
 
-    # Download TikTok videos
-    for video in user_videos:
+# Initialize the TikTokScraper
+scraper = TikTokScraper()
+
+def is_downloaded(video_id):
+    """Check if a video has been downloaded already."""
+    for filename in os.listdir(download_folder):
+        if video_id in filename:
+            return True
+    return False
+
+def download_videos(videos):
+    """Download TikTok videos without a watermark."""
+    for video in videos:
         video_id = video['id']
         video_url = video['video']['playAddr']
-        local_video_path = os.path.join(download_folder, f"{video_id}.mp4")
 
-        if not os.path.exists(local_video_path):
-            print(f"Downloading {video_id}...")
-            scraper.download_video(video_url, local_video_path)
-            print(f"Downloaded {video_id} to {local_video_path}")
+        # Check if the video has already been downloaded
+        if not is_downloaded(video_id):
+            # Download the video without the watermark
+            scraper.download_video(video_url, os.path.join(download_folder, f'{video_id}.mp4'), wm=False)
+            print(f"Downloaded video {video_id}")
         else:
-            print(f"Already downloaded {video_id}")
+            print(f"Skipped video {video_id} (already downloaded)")
 
-def load_config(config_path):
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-    return config
+def main():
+    # Get the user's videos
+    user_videos = scraper.user_videos(username)
+
+    # Download the videos
+    download_videos(user_videos)
 
 if __name__ == "__main__":
-    config_path = "config.json"
-    config = load_config(config_path)
-    my_username = config["username"]
-    my_download_folder = config["download_folder"]
-
-    download_tiktoks(my_username, my_download_folder)
-
+    main()
+# Get the user's videos
+user_videos = scraper.user_videos(username)
+# Download the videos
+download_videos(user_videos)
