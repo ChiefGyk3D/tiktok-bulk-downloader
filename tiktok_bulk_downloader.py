@@ -16,7 +16,7 @@ def download_tiktoks(username, download_folder):
     # Download TikTok videos
     for video in user_videos:
         video_id = video['id']
-        video_url = video['video']['downloadAddr']
+        video_url = video['video']['playAddr']
         local_video_path = os.path.join(download_folder, f"{video_id}.mp4")
 
         if not os.path.exists(local_video_path):
