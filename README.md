@@ -1,3 +1,4 @@
+THIS IS A WORK IN PROGRESS IT DOES NOT WORK AT PRESENT
 ###TikTok Bulk Downloader
 
 This script allows you to bulk download all videos from a specified TikTok user profile. The script is modular and uses a config.json file to set the username and download folder.
